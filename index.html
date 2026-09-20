@@ -34,30 +34,17 @@
 {
   "@context":"https://schema.org",
   "@graph":[
-    {
-      "@type":"WebApplication",
-      "@id":"https://fillpdf.app/#app",
-      "name":"FillPDF.app",
-      "url":"https://fillpdf.app/",
-      "applicationCategory":"UtilitiesApplication",
-      "operatingSystem":"Any device with a modern web browser",
-      "description":"Fill a PDF online free. Upload a PDF, add text, highlights, shapes, images and signatures, then download the completed PDF.",
-      "offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}
-    },
-    {
-      "@type":"FAQPage",
-      "@id":"https://fillpdf.app/#faq",
-      "mainEntity":[
-        {"@type":"Question","name":"How do I fill a PDF online?","acceptedAnswer":{"@type":"Answer","text":"Open FillPDF.app, choose your PDF, then use the toolbar to add text, checkmarks, dates, highlights, shapes or a signature, and click Download Filled PDF."}},
-        {"@type":"Question","name":"Can I fill a PDF without Adobe Acrobat?","acceptedAnswer":{"@type":"Answer","text":"Yes. FillPDF.app runs entirely in your browser, so you do not need Adobe Acrobat."}},
-        {"@type":"Question","name":"Can I fill a PDF on my phone?","acceptedAnswer":{"@type":"Answer","text":"Yes. FillPDF.app works on Android and iPhone, including drawing a signature with your finger."}},
-        {"@type":"Question","name":"Can I add a signature to a PDF?","acceptedAnswer":{"@type":"Answer","text":"Yes. Use the Sign tool to draw your signature and tap the page to place it."}},
-        {"@type":"Question","name":"Can I fill a PDF that is not fillable?","acceptedAnswer":{"@type":"Answer","text":"Yes. Place text, checkmarks, dates, highlights, shapes and signatures anywhere on the page."}},
-        {"@type":"Question","name":"Is FillPDF.app free?","acceptedAnswer":{"@type":"Answer","text":"Yes, FillPDF.app is free. No charge, no watermark, no account."}},
-        {"@type":"Question","name":"Does FillPDF.app require an account?","acceptedAnswer":{"@type":"Answer","text":"No. There is no signup or login."}},
-        {"@type":"Question","name":"Can I download my completed PDF?","acceptedAnswer":{"@type":"Answer","text":"Yes. Click Download Filled PDF and save it to your device."}}
-      ]
-    }
+    {"@type":"WebApplication","@id":"https://fillpdf.app/#app","name":"FillPDF.app","url":"https://fillpdf.app/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any device with a modern web browser","description":"Fill a PDF online free. Upload a PDF, add text, highlights, shapes, images and signatures, then download the completed PDF.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},
+    {"@type":"FAQPage","@id":"https://fillpdf.app/#faq","mainEntity":[
+      {"@type":"Question","name":"How do I fill a PDF online?","acceptedAnswer":{"@type":"Answer","text":"Open FillPDF.app, choose your PDF, then use the toolbar to add text, checkmarks, dates, highlights, shapes or a signature, and click Download Filled PDF."}},
+      {"@type":"Question","name":"Can I fill a PDF without Adobe Acrobat?","acceptedAnswer":{"@type":"Answer","text":"Yes. FillPDF.app runs entirely in your browser, so you do not need Adobe Acrobat."}},
+      {"@type":"Question","name":"Can I fill a PDF on my phone?","acceptedAnswer":{"@type":"Answer","text":"Yes. FillPDF.app works on Android and iPhone, including drawing a signature with your finger."}},
+      {"@type":"Question","name":"Can I add a signature to a PDF?","acceptedAnswer":{"@type":"Answer","text":"Yes. Use the Sign tool to draw your signature and tap the page to place it."}},
+      {"@type":"Question","name":"Can I fill a PDF that is not fillable?","acceptedAnswer":{"@type":"Answer","text":"Yes. Place text, checkmarks, dates, highlights, shapes and signatures anywhere on the page."}},
+      {"@type":"Question","name":"Is FillPDF.app free?","acceptedAnswer":{"@type":"Answer","text":"Yes, FillPDF.app is free. No charge, no watermark, no account."}},
+      {"@type":"Question","name":"Does FillPDF.app require an account?","acceptedAnswer":{"@type":"Answer","text":"No. There is no signup or login."}},
+      {"@type":"Question","name":"Can I download my completed PDF?","acceptedAnswer":{"@type":"Answer","text":"Yes. Click Download Filled PDF and save it to your device."}}
+    ]}
   ]
 }
 </script>
@@ -74,7 +61,7 @@ body{
   color:var(--ink);background:var(--bg);line-height:1.55;
   -webkit-text-size-adjust:100%;overflow-x:hidden;font-size:16px;
 }
-button,input,select{font:inherit}
+button,input,select,textarea{font:inherit}
 a{color:var(--blue);text-decoration:none}
 a:hover{text-decoration:underline}
 img,canvas{max-width:100%;display:block}
@@ -237,13 +224,37 @@ header{padding:22px 0}
 .anno.drag{cursor:grabbing;opacity:.85}
 .anno.sel{outline:2px dashed var(--blue);outline-offset:2px;border-radius:3px}
 .anno-text{padding:1px 2px;font-family:Helvetica,Arial,sans-serif;color:#111}
-.anno-text[contenteditable="true"]{cursor:text;outline:2px solid var(--blue);background:rgba(37,99,235,.06)}
 .anno-check{font-weight:700;font-family:Helvetica,Arial,sans-serif;color:#111}
 .anno-sign img{display:block;pointer-events:none}
 .anno-date{font-family:Helvetica,Arial,sans-serif;color:#111;padding:1px 2px}
 .anno-hi{pointer-events:auto}
 .anno-rect,.anno-arrow,.anno-whiteout,.anno-draw{pointer-events:auto}
 .anno-img img{display:block;pointer-events:none;width:100%;height:100%}
+
+.inline-editor{
+  position:absolute;
+  display:none;
+  z-index:40;
+  padding:2px 4px;
+  margin:0;
+  border:2px solid var(--blue);
+  border-radius:4px;
+  background:rgba(255,255,255,.97);
+  outline:none;
+  resize:none;
+  overflow:hidden;
+  font-family:Helvetica,Arial,sans-serif;
+  color:#111827;
+  line-height:1.25;
+  white-space:pre-wrap;
+  word-break:break-word;
+  min-width:90px;
+  min-height:1.5em;
+  box-sizing:border-box;
+  -webkit-appearance:none;
+  caret-color:var(--blue);
+}
+.inline-editor.on{display:block}
 
 .rh{
   position:absolute;width:12px;height:12px;background:#fff;
@@ -340,6 +351,90 @@ footer{
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:13px 20px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:300;max-width:92vw;text-align:center}
 .toast.hide{display:none}
 
+/* ---------- Virtual Keyboard ---------- */
+.vk{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  z-index:500;
+  background:#d1d5db;
+  padding:8px 6px calc(8px + env(safe-area-inset-bottom, 0px));
+  box-shadow:0 -4px 20px rgba(0,0,0,.15);
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  font-family:inherit;
+}
+.vk[hidden]{display:none}
+.vk-layer{display:block}
+.vk-layer[hidden]{display:none}
+.vk-row{
+  display:flex;
+  justify-content:center;
+  gap:5px;
+  margin-bottom:5px;
+  max-width:820px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.vk-row:last-child{margin-bottom:0}
+.vk-key{
+  flex:1 1 0;
+  min-width:0;
+  height:44px;
+  background:#fff;
+  border:0;
+  border-radius:6px;
+  font-family:inherit;
+  font-size:18px;
+  font-weight:500;
+  color:#111827;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 1px 0 rgba(0,0,0,.2);
+  transition:background .06s, transform .06s;
+  touch-action:manipulation;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+.vk-key:hover{background:#f3f4f6}
+.vk-key:active{background:#e5e7eb;transform:translateY(1px)}
+.vk-mod{background:#aeb3bb;flex:0 0 54px;font-size:16px}
+.vk-mod:hover{background:#a4a9b2}
+.vk-mod:active{background:#9297a0}
+.vk-wide{flex:5 1 0;font-size:12.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.vk-tab{background:#374151;color:#fff;flex:0 0 68px;font-size:13.5px;font-weight:700;letter-spacing:.02em}
+.vk-tab:hover{background:#1f2937}
+.vk-tab:active{background:#111827}
+.vk-done{
+  background:var(--blue);
+  color:#fff;
+  flex:0 0 78px;
+  font-size:14.5px;
+  font-weight:700;
+  letter-spacing:.02em;
+}
+.vk-done:hover{background:var(--blue-dark)}
+.vk-done:active{background:var(--blue-dark)}
+@media(max-width:480px){
+  .vk{padding:6px 4px calc(6px + env(safe-area-inset-bottom, 0px))}
+  .vk-key{height:42px;font-size:17px;border-radius:5px}
+  .vk-row{gap:4px;margin-bottom:4px}
+  .vk-mod{flex:0 0 46px;font-size:15px}
+  .vk-tab{flex:0 0 58px;font-size:12px}
+  .vk-done{flex:0 0 66px;font-size:13px}
+  .vk-wide{font-size:11.5px}
+}
+@media(max-width:360px){
+  .vk-key{height:38px;font-size:16px}
+  .vk-mod{flex:0 0 40px;font-size:14px}
+  .vk-tab{flex:0 0 52px;font-size:11px}
+  .vk-done{flex:0 0 58px;font-size:12.5px}
+}
+body.vk-open{padding-bottom:230px}
+@media(max-width:480px){body.vk-open{padding-bottom:220px}}
+
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -413,6 +508,19 @@ footer{
         </button>
         <button type="button" class="tbtn" data-tool="text">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 6h14M12 6v13"/></svg>Text
+        </button>
+        <button type="button" class="tbtn" data-tool="number" aria-label="Number text">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M8 4v16M16 4v16M4 9h16M4 15h16"/>
+          </svg>
+          Number
+        </button>
+        <button type="button" class="tbtn" data-tool="email" aria-label="Email text">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="14" rx="2"/>
+            <path d="M3 7l9 6 9-6"/>
+          </svg>
+          Email
         </button>
         <button type="button" class="tbtn" data-tool="check">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 13l5 5L20 6"/></svg>Check
@@ -549,6 +657,9 @@ footer{
       <div class="page" id="page">
         <canvas id="cv" aria-label="PDF preview"></canvas>
         <div class="ovl" id="ovl"></div>
+        <textarea id="inlineEditor" class="inline-editor" aria-label="Text editor"
+                  readonly inputmode="none" autocomplete="off" autocorrect="off"
+                  autocapitalize="off" spellcheck="false" tabindex="0"></textarea>
       </div>
     </div>
 
@@ -575,9 +686,9 @@ footer{
           <h3>How to Fill a PDF Online</h3>
           <ol>
             <li>Drop your PDF above, or click <strong>Choose PDF</strong>.</li>
-            <li>Pick a tool: Text, Check, Date, Sign, Highlight, Draw, Box, Arrow, Whiteout or Image.</li>
+            <li>Pick a tool: Text, Number, Email, Check, Date, Sign, Highlight, Draw, Box, Arrow, Whiteout or Image.</li>
             <li>Click on the page where content should go.</li>
-            <li>Drag to move. Resize shapes from the bottom-right corner.</li>
+            <li>Type with the built-in keyboard. Press <strong>Tab</strong> to jump to the next empty field.</li>
             <li>Click <strong>Download Filled PDF</strong>.</li>
           </ol>
         </section>
@@ -597,12 +708,13 @@ footer{
         <section>
           <h3>Fill PDF on Your Phone</h3>
           <p>
-            FillPDF.app is built mobile-first. The toolbar scrolls horizontally,
-            the Download button stays pinned, and every control is finger-sized.
+            FillPDF.app is built mobile-first with its own in-browser keyboard, so
+            typing works the same on every device. No more fighting with mobile
+            keyboards that won't appear.
           </p>
           <ul class="clean">
-            <li>Tap to place text, checks, shapes</li>
-            <li>Drag to reposition, pinch the handle to resize</li>
+            <li>Number pad and email layout built in</li>
+            <li>Tab jumps to the next empty field</li>
             <li>Sign with your fingertip</li>
           </ul>
         </section>
@@ -641,8 +753,8 @@ footer{
 
       <details>
         <summary>Can I fill a PDF on my phone?</summary>
-        <p>Yes. The site works on Android, iPhone and tablets. You can draw a
-        signature, place shapes and resize them with a finger.</p>
+        <p>Yes. The site works on Android, iPhone and tablets. It uses its own
+        in-browser keyboard, so typing works the same everywhere.</p>
       </details>
 
       <details>
@@ -730,6 +842,228 @@ footer{
 
 <input type="file" id="imgFile" accept="image/png,image/jpeg" class="sr-only">
 
+<!-- =========================================================
+     VIRTUAL KEYBOARD
+     ========================================================= -->
+<div class="vk" id="vk" hidden aria-label="On-screen keyboard">
+
+  <!-- Letters layer -->
+  <div class="vk-layer" data-layer="letters">
+    <div class="vk-row">
+      <button type="button" class="vk-key" data-ch="q">q</button>
+      <button type="button" class="vk-key" data-ch="w">w</button>
+      <button type="button" class="vk-key" data-ch="e">e</button>
+      <button type="button" class="vk-key" data-ch="r">r</button>
+      <button type="button" class="vk-key" data-ch="t">t</button>
+      <button type="button" class="vk-key" data-ch="y">y</button>
+      <button type="button" class="vk-key" data-ch="u">u</button>
+      <button type="button" class="vk-key" data-ch="i">i</button>
+      <button type="button" class="vk-key" data-ch="o">o</button>
+      <button type="button" class="vk-key" data-ch="p">p</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key" data-ch="a">a</button>
+      <button type="button" class="vk-key" data-ch="s">s</button>
+      <button type="button" class="vk-key" data-ch="d">d</button>
+      <button type="button" class="vk-key" data-ch="f">f</button>
+      <button type="button" class="vk-key" data-ch="g">g</button>
+      <button type="button" class="vk-key" data-ch="h">h</button>
+      <button type="button" class="vk-key" data-ch="j">j</button>
+      <button type="button" class="vk-key" data-ch="k">k</button>
+      <button type="button" class="vk-key" data-ch="l">l</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key vk-mod" data-act="shift" aria-label="Shift">⇧</button>
+      <button type="button" class="vk-key" data-ch="z">z</button>
+      <button type="button" class="vk-key" data-ch="x">x</button>
+      <button type="button" class="vk-key" data-ch="c">c</button>
+      <button type="button" class="vk-key" data-ch="v">v</button>
+      <button type="button" class="vk-key" data-ch="b">b</button>
+      <button type="button" class="vk-key" data-ch="n">n</button>
+      <button type="button" class="vk-key" data-ch="m">m</button>
+      <button type="button" class="vk-key vk-mod" data-act="back" aria-label="Backspace">⌫</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key vk-mod" data-act="sym1" aria-label="Symbols">?123</button>
+      <button type="button" class="vk-key vk-wide" data-ch=" " aria-label="Space">space</button>
+      <button type="button" class="vk-key vk-mod" data-act="enter" aria-label="Enter">↵</button>
+      <button type="button" class="vk-key vk-tab" data-act="tab" aria-label="Next field">Tab</button>
+      <button type="button" class="vk-key vk-done" data-act="close">Done</button>
+    </div>
+  </div>
+
+  <!-- Numbers layer -->
+  <div class="vk-layer" data-layer="numbers" hidden>
+    <div class="vk-row">
+      <button type="button" class="vk-key" data-ch="1">1</button>
+      <button type="button" class="vk-key" data-ch="2">2</button>
+      <button type="button" class="vk-key" data-ch="3">3</button>
+      <button type="button" class="vk-key" data-ch="4">4</button>
+      <button type="button" class="vk-key" data-ch="5">5</button>
+      <button type="button" class="vk-key" data-ch="6">6</button>
+      <button type="button" class="vk-key" data-ch="7">7</button>
+      <button type="button" class="vk-key" data-ch="8">8</button>
+      <button type="button" class="vk-key" data-ch="9">9</button>
+      <button type="button" class="vk-key" data-ch="0">0</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key" data-ch="-">-</button>
+      <button type="button" class="vk-key" data-ch="/">/</button>
+      <button type="button" class="vk-key" data-ch=":">:</button>
+      <button type="button" class="vk-key" data-ch=";">;</button>
+      <button type="button" class="vk-key" data-ch="(">(</button>
+      <button type="button" class="vk-key" data-ch=")">)</button>
+      <button type="button" class="vk-key" data-ch=".">.</button>
+      <button type="button" class="vk-key" data-ch=",">,</button>
+      <button type="button" class="vk-key" data-ch="+">+</button>
+      <button type="button" class="vk-key vk-mod" data-act="back" aria-label="Backspace">⌫</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key vk-mod" data-act="letters" aria-label="Letters">ABC</button>
+      <button type="button" class="vk-key vk-wide" data-ch=" " aria-label="Space">space</button>
+      <button type="button" class="vk-key vk-mod" data-act="enter" aria-label="Enter">↵</button>
+      <button type="button" class="vk-key vk-tab" data-act="tab" aria-label="Next field">Tab</button>
+      <button type="button" class="vk-key vk-done" data-act="close">Done</button>
+    </div>
+  </div>
+
+  <!-- Email layer -->
+  <div class="vk-layer" data-layer="email" hidden>
+    <div class="vk-row">
+      <button type="button" class="vk-key" data-ch="q">q</button>
+      <button type="button" class="vk-key" data-ch="w">w</button>
+      <button type="button" class="vk-key" data-ch="e">e</button>
+      <button type="button" class="vk-key" data-ch="r">r</button>
+      <button type="button" class="vk-key" data-ch="t">t</button>
+      <button type="button" class="vk-key" data-ch="y">y</button>
+      <button type="button" class="vk-key" data-ch="u">u</button>
+      <button type="button" class="vk-key" data-ch="i">i</button>
+      <button type="button" class="vk-key" data-ch="o">o</button>
+      <button type="button" class="vk-key" data-ch="p">p</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key" data-ch="a">a</button>
+      <button type="button" class="vk-key" data-ch="s">s</button>
+      <button type="button" class="vk-key" data-ch="d">d</button>
+      <button type="button" class="vk-key" data-ch="f">f</button>
+      <button type="button" class="vk-key" data-ch="g">g</button>
+      <button type="button" class="vk-key" data-ch="h">h</button>
+      <button type="button" class="vk-key" data-ch="j">j</button>
+      <button type="button" class="vk-key" data-ch="k">k</button>
+      <button type="button" class="vk-key" data-ch="l">l</button>
+      <button type="button" class="vk-key" data-ch="@">@</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key vk-mod" data-act="shift" aria-label="Shift">⇧</button>
+      <button type="button" class="vk-key" data-ch="z">z</button>
+      <button type="button" class="vk-key" data-ch="x">x</button>
+      <button type="button" class="vk-key" data-ch="c">c</button>
+      <button type="button" class="vk-key" data-ch="v">v</button>
+      <button type="button" class="vk-key" data-ch="b">b</button>
+      <button type="button" class="vk-key" data-ch="n">n</button>
+      <button type="button" class="vk-key" data-ch="m">m</button>
+      <button type="button" class="vk-key" data-ch=".">.</button>
+      <button type="button" class="vk-key vk-mod" data-act="back" aria-label="Backspace">⌫</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key vk-mod" data-act="sym1" aria-label="Symbols">?123</button>
+      <button type="button" class="vk-key vk-wide" data-ch=" " aria-label="Space">space</button>
+      <button type="button" class="vk-key vk-mod" data-act="enter" aria-label="Enter">↵</button>
+      <button type="button" class="vk-key vk-tab" data-act="tab" aria-label="Next field">Tab</button>
+      <button type="button" class="vk-key vk-done" data-act="close">Done</button>
+    </div>
+  </div>
+
+  <!-- Symbols layer 1 -->
+  <div class="vk-layer" data-layer="sym1" hidden>
+    <div class="vk-row">
+      <button type="button" class="vk-key" data-ch="1">1</button>
+      <button type="button" class="vk-key" data-ch="2">2</button>
+      <button type="button" class="vk-key" data-ch="3">3</button>
+      <button type="button" class="vk-key" data-ch="4">4</button>
+      <button type="button" class="vk-key" data-ch="5">5</button>
+      <button type="button" class="vk-key" data-ch="6">6</button>
+      <button type="button" class="vk-key" data-ch="7">7</button>
+      <button type="button" class="vk-key" data-ch="8">8</button>
+      <button type="button" class="vk-key" data-ch="9">9</button>
+      <button type="button" class="vk-key" data-ch="0">0</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key" data-ch="-">-</button>
+      <button type="button" class="vk-key" data-ch="/">/</button>
+      <button type="button" class="vk-key" data-ch=":">:</button>
+      <button type="button" class="vk-key" data-ch=";">;</button>
+      <button type="button" class="vk-key" data-ch="(">(</button>
+      <button type="button" class="vk-key" data-ch=")">)</button>
+      <button type="button" class="vk-key" data-ch="$">$</button>
+      <button type="button" class="vk-key" data-ch="&amp;">&amp;</button>
+      <button type="button" class="vk-key" data-ch="@">@</button>
+      <button type="button" class="vk-key" data-ch="&quot;">&quot;</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key vk-mod" data-act="sym2">#+=</button>
+      <button type="button" class="vk-key" data-ch=".">.</button>
+      <button type="button" class="vk-key" data-ch=",">,</button>
+      <button type="button" class="vk-key" data-ch="?">?</button>
+      <button type="button" class="vk-key" data-ch="!">!</button>
+      <button type="button" class="vk-key" data-ch="'">'</button>
+      <button type="button" class="vk-key vk-mod" data-act="back" aria-label="Backspace">⌫</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key vk-mod" data-act="letters">ABC</button>
+      <button type="button" class="vk-key vk-wide" data-ch=" " aria-label="Space">space</button>
+      <button type="button" class="vk-key vk-mod" data-act="enter" aria-label="Enter">↵</button>
+      <button type="button" class="vk-key vk-tab" data-act="tab" aria-label="Next field">Tab</button>
+      <button type="button" class="vk-key vk-done" data-act="close">Done</button>
+    </div>
+  </div>
+
+  <!-- Symbols layer 2 -->
+  <div class="vk-layer" data-layer="sym2" hidden>
+    <div class="vk-row">
+      <button type="button" class="vk-key" data-ch="[">[</button>
+      <button type="button" class="vk-key" data-ch="]">]</button>
+      <button type="button" class="vk-key" data-ch="{">{</button>
+      <button type="button" class="vk-key" data-ch="}">}</button>
+      <button type="button" class="vk-key" data-ch="#">#</button>
+      <button type="button" class="vk-key" data-ch="%">%</button>
+      <button type="button" class="vk-key" data-ch="^">^</button>
+      <button type="button" class="vk-key" data-ch="*">*</button>
+      <button type="button" class="vk-key" data-ch="+">+</button>
+      <button type="button" class="vk-key" data-ch="=">=</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key" data-ch="_">_</button>
+      <button type="button" class="vk-key" data-ch="\">\</button>
+      <button type="button" class="vk-key" data-ch="|">|</button>
+      <button type="button" class="vk-key" data-ch="~">~</button>
+      <button type="button" class="vk-key" data-ch="&lt;">&lt;</button>
+      <button type="button" class="vk-key" data-ch="&gt;">&gt;</button>
+      <button type="button" class="vk-key" data-ch="€">€</button>
+      <button type="button" class="vk-key" data-ch="£">£</button>
+      <button type="button" class="vk-key" data-ch="¥">¥</button>
+      <button type="button" class="vk-key" data-ch="•">•</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key vk-mod" data-act="sym1">?123</button>
+      <button type="button" class="vk-key" data-ch=".">.</button>
+      <button type="button" class="vk-key" data-ch=",">,</button>
+      <button type="button" class="vk-key" data-ch="?">?</button>
+      <button type="button" class="vk-key" data-ch="!">!</button>
+      <button type="button" class="vk-key" data-ch="'">'</button>
+      <button type="button" class="vk-key vk-mod" data-act="back" aria-label="Backspace">⌫</button>
+    </div>
+    <div class="vk-row">
+      <button type="button" class="vk-key vk-mod" data-act="letters">ABC</button>
+      <button type="button" class="vk-key vk-wide" data-ch=" " aria-label="Space">space</button>
+      <button type="button" class="vk-key vk-mod" data-act="enter" aria-label="Enter">↵</button>
+      <button type="button" class="vk-key vk-tab" data-act="tab" aria-label="Next field">Tab</button>
+      <button type="button" class="vk-key vk-done" data-act="close">Done</button>
+    </div>
+  </div>
+
+</div>
+
 <script>
 document.addEventListener("DOMContentLoaded", function(){
 "use strict";
@@ -782,6 +1116,7 @@ var $ = function(id){ return document.getElementById(id); };
 var drop = $("drop"), fileInput = $("file"), pickBtn = $("pickBtn"), imgFile = $("imgFile");
 var upload = $("upload"), editor = $("editor");
 var stage = $("stage"), page = $("page"), cv = $("cv"), ovl = $("ovl");
+var inlineEditor = $("inlineEditor");
 var fname = $("fname"), hint = $("hint");
 var pager = $("pager"), pnum = $("pnum"), ptot = $("ptot");
 var prevBtn = $("prev"), nextBtn = $("next");
@@ -796,11 +1131,14 @@ var delAnno = $("delAnno");
 var sigModal = $("sigModal"), sigcv = $("sigcv"), sigClear = $("sigClear"), sigSave = $("sigSave");
 var cfmModal = $("cfmModal"), cfmSub = $("cfmSub");
 var load = $("load"), loadTxt = $("loadTxt"), toastEl = $("toast");
+var vk = $("vk");
+var vkLayers = Array.prototype.slice.call(vk.querySelectorAll(".vk-layer"));
 
 var S = {
   bytes: null, doc: null, page: 0, pages: 0,
   scale: 1, base: 1, vp: null, tool: "select",
   annos: [], fields: [], sel: null, pendSig: null,
+  editingId: null,
   hist: [], fut: [], fname: "document.pdf",
   pageRot: {}, delPages: [],
   hiColor: "#fef08a", strokeColor: "#dc2626", strokeW: 2,
@@ -809,6 +1147,7 @@ var S = {
 };
 var seq = 0;
 function nid(){ return ++seq; }
+var vkShiftOn = false;
 
 var toastT;
 function toast(m){
@@ -834,6 +1173,7 @@ function histBtn(){
 }
 function undo(){
   if (!S.hist.length) return;
+  closeEditor(false);
   S.fut.push(snap());
   var st = JSON.parse(S.hist.pop());
   S.annos = st.a; S.fields = st.f;
@@ -841,12 +1181,293 @@ function undo(){
 }
 function redo(){
   if (!S.fut.length) return;
+  closeEditor(false);
   S.hist.push(snap());
   var st = JSON.parse(S.fut.pop());
   S.annos = st.a; S.fields = st.f;
   S.sel = null; drawAll(); syncProps(); histBtn();
 }
 
+/* =========================================================
+   VIRTUAL KEYBOARD
+   ========================================================= */
+function vkShow(){
+  if (!vk.hidden) return;
+  vk.hidden = false;
+  document.body.classList.add("vk-open");
+  requestAnimationFrame(function(){
+    setTimeout(revealEditor, 30);
+  });
+}
+function vkHide(){
+  if (vk.hidden) return;
+  vk.hidden = true;
+  document.body.classList.remove("vk-open");
+  vkSetLayer("letters");
+}
+function vkSetLayer(name){
+  vkLayers.forEach(function(l){
+    l.hidden = l.dataset.layer !== name;
+  });
+}
+function vkApplyCase(){
+  // Apply shift state to all letter keys in every layer that has them
+  vkLayers.forEach(function(layer){
+    Array.prototype.forEach.call(layer.querySelectorAll(".vk-key[data-ch]"), function(btn){
+      var base = btn.dataset.ch;
+      if (base.length === 1 && /[a-z]/i.test(base)){
+        btn.textContent = vkShiftOn ? base.toUpperCase() : base.toLowerCase();
+      }
+    });
+  });
+}
+function vkHandleAction(btn){
+  var act = btn.dataset.act;
+  var ch = btn.dataset.ch;
+
+  if (act === "shift"){ vkShiftOn = !vkShiftOn; vkApplyCase(); return; }
+  if (act === "back"){ vkBackspace(); return; }
+  if (act === "enter"){ vkInsert("\n"); return; }
+  if (act === "sym1"){ vkSetLayer("sym1"); return; }
+  if (act === "sym2"){ vkSetLayer("sym2"); return; }
+  if (act === "letters"){ vkSetLayer("letters"); return; }
+  if (act === "tab"){ vkTab(); return; }
+  if (act === "close"){ closeEditor(true); return; }
+
+  if (ch != null){
+    var out = ch;
+    if (ch.length === 1 && /[a-z]/i.test(ch) && vkShiftOn){
+      out = ch.toUpperCase();
+      vkShiftOn = false;
+      vkApplyCase();
+    }
+    vkInsert(out);
+  }
+}
+
+vk.addEventListener("pointerdown", function(e){
+  var btn = e.target.closest(".vk-key");
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  vkHandleAction(btn);
+}, { passive: false });
+
+/* =========================================================
+   INLINE EDITOR + VIRTUAL KEYBOARD HOOKUP
+   ========================================================= */
+function autosizeEditor(){
+  inlineEditor.style.height = "1px";
+  inlineEditor.style.height = inlineEditor.scrollHeight + "px";
+  inlineEditor.style.width = "1px";
+  inlineEditor.style.width = Math.max(90, inlineEditor.scrollWidth + 10) + "px";
+}
+
+function revealEditor(){
+  if (S.editingId == null) return;
+  if (vk.hidden) return;
+  var kbh = vk.offsetHeight;
+  var vh = window.innerHeight - kbh;
+  var r = inlineEditor.getBoundingClientRect();
+  if (r.bottom > vh - 20){
+    window.scrollBy({ top: r.bottom - vh + 60, behavior: "smooth" });
+  } else if (r.top < 80){
+    window.scrollBy({ top: r.top - 80, behavior: "smooth" });
+  }
+}
+
+function kindToLayer(kind){
+  if (kind === "number") return "numbers";
+  if (kind === "email") return "email";
+  return "letters";
+}
+
+function openEditorFor(a){
+  var k = S.base * S.scale;
+  S.editingId = a.id;
+  S.sel = a.id;
+
+  inlineEditor.value = a.text || "";
+  inlineEditor.style.left = (a.x * k) + "px";
+  inlineEditor.style.top  = (a.y * k) + "px";
+  inlineEditor.style.fontSize = Math.max(16, a.fontSize * k) + "px";
+  inlineEditor.style.color = a.color || "#111827";
+  inlineEditor.classList.add("on");
+
+  requestAnimationFrame(function(){ autosizeEditor(); });
+
+  drawAnnos();
+  syncProps();
+
+  vkShow();
+  vkSetLayer(kindToLayer(a.kind));
+
+  try { inlineEditor.focus({ preventScroll: true }); } catch(e){
+    try { inlineEditor.focus(); } catch(_){}
+  }
+  try { inlineEditor.setSelectionRange(inlineEditor.value.length, inlineEditor.value.length); } catch(e){}
+
+  setTimeout(revealEditor, 60);
+}
+
+function closeEditor(commit){
+  vkHide();
+  if (S.editingId == null) return;
+  var a = S.annos.filter(function(x){ return x.id === S.editingId; })[0];
+  if (a){
+    a.text = inlineEditor.value;
+    if (!a.text.trim()){
+      S.annos = S.annos.filter(function(x){ return x.id !== a.id; });
+      S.sel = null;
+      if (commit !== false) push();
+    } else if (commit !== false){
+      push();
+    }
+  }
+  inlineEditor.classList.remove("on");
+  inlineEditor.value = "";
+  S.editingId = null;
+  drawAll();
+  syncProps();
+}
+
+function vkInsert(ch){
+  if (S.editingId == null) return;
+  var start = inlineEditor.selectionStart;
+  var end = inlineEditor.selectionEnd;
+  var val = inlineEditor.value;
+  if (start == null) start = val.length;
+  if (end == null) end = val.length;
+
+  inlineEditor.value = val.slice(0, start) + ch + val.slice(end);
+  var pos = start + ch.length;
+  try { inlineEditor.setSelectionRange(pos, pos); } catch(e){}
+
+  var a = S.annos.filter(function(x){ return x.id === S.editingId; })[0];
+  if (a) a.text = inlineEditor.value;
+
+  autosizeEditor();
+  try { inlineEditor.focus({ preventScroll: true }); } catch(e){}
+  revealEditor();
+}
+
+function vkBackspace(){
+  if (S.editingId == null) return;
+  var start = inlineEditor.selectionStart;
+  var end = inlineEditor.selectionEnd;
+  var val = inlineEditor.value;
+  if (start == null) start = val.length;
+  if (end == null) end = val.length;
+
+  if (start === end){
+    if (start === 0) return;
+    inlineEditor.value = val.slice(0, start - 1) + val.slice(start);
+    try { inlineEditor.setSelectionRange(start - 1, start - 1); } catch(e){}
+  } else {
+    inlineEditor.value = val.slice(0, start) + val.slice(end);
+    try { inlineEditor.setSelectionRange(start, start); } catch(e){}
+  }
+
+  var a = S.annos.filter(function(x){ return x.id === S.editingId; })[0];
+  if (a) a.text = inlineEditor.value;
+
+  autosizeEditor();
+  try { inlineEditor.focus({ preventScroll: true }); } catch(e){}
+  revealEditor();
+}
+
+/* Tab: jump to next empty text annotation on the page.
+   If all are filled, cycle to the next one. */
+function vkTab(){
+  var current = S.annos.filter(function(x){ return x.id === S.editingId; })[0];
+  if (!current) return;
+
+  // Collect all text annotations on this page, sorted by visual order
+  var texts = S.annos.filter(function(a){
+    return a.page === S.page && a.type === "text";
+  }).sort(function(a, b){
+    if (Math.abs(a.y - b.y) > 15) return a.y - b.y;
+    return a.x - b.x;
+  });
+
+  if (texts.length < 2) return;
+
+  var idx = -1;
+  for (var i = 0; i < texts.length; i++){
+    if (texts[i].id === current.id){ idx = i; break; }
+  }
+  if (idx === -1) return;
+
+  // Prefer next empty field
+  var target = null;
+  for (var j = 1; j < texts.length; j++){
+    var cand = texts[(idx + j) % texts.length];
+    if (cand.id === current.id) break;
+    if (!cand.text || !cand.text.trim()){
+      target = cand;
+      break;
+    }
+  }
+
+  // Otherwise, next field in order
+  if (!target){
+    var next = texts[(idx + 1) % texts.length];
+    if (next.id === current.id) return;
+    target = next;
+  }
+
+  // Save current text first
+  current.text = inlineEditor.value;
+
+  var targetId = target.id;
+
+  // Manually close editor (skip its auto-push to avoid double-pushing)
+  vkHide();
+  inlineEditor.classList.remove("on");
+  inlineEditor.value = "";
+  S.editingId = null;
+
+  // Clean up empty current
+  if (!current.text.trim()){
+    S.annos = S.annos.filter(function(x){ return x.id !== current.id; });
+  }
+  push();
+
+  // Re-lookup target (it may have shifted)
+  var t2 = S.annos.filter(function(x){ return x.id === targetId; })[0];
+  if (!t2){ drawAll(); syncProps(); return; }
+
+  S.sel = t2.id;
+  drawAll();
+  openEditorFor(t2);
+}
+
+// Physical keyboard
+inlineEditor.addEventListener("keydown", function(e){
+  if (e.ctrlKey || e.metaKey){
+    if (e.key === "Escape"){ e.preventDefault(); closeEditor(true); }
+    return;
+  }
+  if (e.key === "Escape"){ e.preventDefault(); closeEditor(true); return; }
+  if (e.key === "Backspace"){ e.preventDefault(); vkBackspace(); return; }
+  if (e.key === "Enter"){ e.preventDefault(); vkInsert("\n"); return; }
+  if (e.key === "Tab"){ e.preventDefault(); vkTab(); return; }
+  if (e.key.length === 1 && e.key.charCodeAt(0) >= 32){
+    e.preventDefault();
+    vkInsert(e.key);
+    return;
+  }
+});
+
+inlineEditor.addEventListener("input", function(){
+  autosizeEditor();
+  var a = S.annos.filter(function(x){ return x.id === S.editingId; })[0];
+  if (a) a.text = inlineEditor.value;
+});
+
+/* =========================================================
+   UPLOAD
+   ========================================================= */
 pickBtn.addEventListener("click", function(e){ e.stopPropagation(); fileInput.click(); });
 drop.addEventListener("click", function(){ fileInput.click(); });
 drop.addEventListener("keydown", function(e){
@@ -903,8 +1524,11 @@ function openPdf(bytes){
   pdfjsLib.getDocument({ data: bytes, isEvalSupported: false }).promise.then(function(doc){
     S.doc = doc; S.pages = doc.numPages; S.page = 0;
     S.annos = []; S.fields = []; S.hist = []; S.fut = [];
-    S.sel = null; S.pendSig = null;
+    S.sel = null; S.pendSig = null; S.editingId = null;
     S.pageRot = {}; S.delPages = [];
+    inlineEditor.classList.remove("on");
+    inlineEditor.value = "";
+    vkHide();
     histBtn();
 
     fname.textContent = S.fname;
@@ -1010,7 +1634,19 @@ function render(){
       if (err && err.name === "RenderingCancelledException") return;
       throw err;
     });
-  }).then(function(){ drawAll(); }).catch(function(err){
+  }).then(function(){
+    if (S.editingId != null){
+      var a = S.annos.filter(function(x){ return x.id === S.editingId; })[0];
+      if (a){
+        var k = S.base * S.scale;
+        inlineEditor.style.left = (a.x * k) + "px";
+        inlineEditor.style.top  = (a.y * k) + "px";
+        inlineEditor.style.fontSize = Math.max(16, a.fontSize * k) + "px";
+        autosizeEditor();
+      }
+    }
+    drawAll();
+  }).catch(function(err){
     console.warn(err);
     track("error_occurred", { error_type: "render_failed" });
   });
@@ -1026,6 +1662,8 @@ function drawAnnos(){
   var k = S.base * S.scale;
 
   pageAnnos().forEach(function(a){
+    if (a.type === "text" && a.id === S.editingId) return;
+
     var el = document.createElement("div");
     el.className = "anno anno-" + a.type;
     el.dataset.id = String(a.id);
@@ -1200,7 +1838,6 @@ function bindAnno(el, a){
 
   el.addEventListener("pointerdown", function(e){
     if (S.tool !== "select") return;
-    if (el.getAttribute("contenteditable") === "true") return;
     if (e.target.classList.contains("rh")) return;
     e.stopPropagation();
     drag = true; moved = false;
@@ -1242,32 +1879,26 @@ function bindAnno(el, a){
   });
   el.addEventListener("pointercancel", function(){ drag = false; el.classList.remove("drag"); });
 
-  el.addEventListener("dblclick", function(e){
-    if (S.tool !== "select" || a.type !== "text") return;
+  el.addEventListener("click", function(e){
+    if (a.type !== "text") return;
     e.stopPropagation();
-    el.setAttribute("contenteditable", "true");
-    el.focus();
-    var r = document.createRange();
-    r.selectNodeContents(el);
-    var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    openEditorFor(a);
   });
-  el.addEventListener("blur", function(){
-    if (el.getAttribute("contenteditable") === "true"){
-      el.setAttribute("contenteditable", "false");
-      a.text = el.textContent; push();
-    }
-  });
+
   el.addEventListener("keydown", function(e){
     if (e.key === "Delete" || e.key === "Backspace"){
-      if (el.getAttribute("contenteditable") === "true") return;
       e.preventDefault(); del(a.id);
     }
-    if (e.key === "Escape") el.blur();
+    if (e.key === "Enter" && a.type === "text"){
+      e.preventDefault();
+      openEditorFor(a);
+    }
   });
 }
 
 function select(id){ S.sel = id; drawAll(); syncProps(); }
 function del(id){
+  if (S.editingId === id) closeEditor(false);
   S.annos = S.annos.filter(function(a){ return a.id !== id; });
   S.sel = null; push(); drawAll(); syncProps();
 }
@@ -1303,8 +1934,9 @@ function syncProps(){
     }
     showDel = true;
   } else {
-    if (tool === "text"){
-      hdr = "Text"; showText = true;
+    if (tool === "text" || tool === "number" || tool === "email"){
+      hdr = (tool === "number" ? "Number" : tool === "email" ? "Email" : "Text");
+      showText = true;
       pSize.value = S.textSize; pColor.value = S.textColor;
     } else if (tool === "highlight"){
       hdr = "Highlight"; showHi = true;
@@ -1332,13 +1964,20 @@ pSize.addEventListener("input", function(){
   var a = S.annos.filter(function(x){ return x.id === S.sel; })[0];
   var v = Math.max(6, Math.min(96, parseInt(pSize.value, 10) || 14));
   if (a && (a.type === "text" || a.type === "date" || a.type === "check")){
-    a.fontSize = v; drawAnnos(); push();
+    a.fontSize = v;
+    if (a.id === S.editingId){
+      inlineEditor.style.fontSize = Math.max(16, v * S.base * S.scale) + "px";
+      autosizeEditor();
+    }
+    drawAnnos(); push();
   } else { S.textSize = v; }
 });
 pColor.addEventListener("input", function(){
   var a = S.annos.filter(function(x){ return x.id === S.sel; })[0];
   if (a && (a.type === "text" || a.type === "date" || a.type === "check")){
-    a.color = pColor.value; drawAnnos(); push();
+    a.color = pColor.value;
+    if (a.id === S.editingId) inlineEditor.style.color = pColor.value;
+    drawAnnos(); push();
   } else { S.textColor = pColor.value; }
 });
 Array.prototype.forEach.call(document.querySelectorAll(".sw[data-hi]"), function(s){
@@ -1369,6 +2008,7 @@ delAnno.addEventListener("click", function(){
 ovl.addEventListener("pointerdown", function(e){
   if (e.target !== ovl) return;
   if (S.tool === "select"){
+    closeEditor(true);
     S.sel = null; drawAll(); syncProps(); return;
   }
   if (S.tool === "draw"){ startDraw(e); return; }
@@ -1382,9 +2022,16 @@ function place(cx, cy){
   var x = (cx - r.left) / k, y = (cy - r.top) / k;
 
   var a = null;
+  var kind = "text";
   if (S.tool === "text"){
-    a = { id: nid(), page: S.page, type: "text", x: x, y: y, text: "Text", fontSize: S.textSize, color: S.textColor };
+    a = { id: nid(), page: S.page, type: "text", kind: "text", x: x, y: y, text: "", fontSize: S.textSize, color: S.textColor };
     track("text_added");
+  } else if (S.tool === "number"){
+    a = { id: nid(), page: S.page, type: "text", kind: "number", x: x, y: y, text: "", fontSize: S.textSize, color: S.textColor };
+    track("number_added");
+  } else if (S.tool === "email"){
+    a = { id: nid(), page: S.page, type: "text", kind: "email", x: x, y: y, text: "", fontSize: S.textSize, color: S.textColor };
+    track("email_added");
   } else if (S.tool === "check"){
     a = { id: nid(), page: S.page, type: "check", x: x, y: y, text: "check", fontSize: S.textSize, color: S.textColor };
   } else if (S.tool === "date"){
@@ -1414,19 +2061,29 @@ function place(cx, cy){
 
   if (!a) return;
   S.annos.push(a);
-  push(); drawAll();
 
   if (a.type === "text"){
-    var el = ovl.querySelector('[data-id="' + a.id + '"]');
-    if (el){
-      el.setAttribute("contenteditable", "true");
-      el.focus();
-      var r2 = document.createRange();
-      r2.selectNodeContents(el);
-      var sl = window.getSelection(); sl.removeAllRanges(); sl.addRange(r2);
-    }
-    setTool("select");
+    // Flip to Select immediately
+    tbtns.forEach(function(b){
+      var on = b.dataset.tool === "select";
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    S.tool = "select";
+    cv.style.cursor = "default";
+    ovl.style.cursor = "default";
+
+    // Checkpoint first
+    S.hist.push(snap());
+    histBtn();
+
+    // Open the shared editor + virtual keyboard synchronously
+    openEditorFor(a);
+    return;
   }
+
+  push();
+  drawAll();
 }
 
 var drawing = null;
@@ -1521,6 +2178,9 @@ function fmt(d){
 var tbtns = Array.prototype.slice.call(document.querySelectorAll(".tbtn[data-tool]"));
 
 function setTool(name){
+  if (name !== "text" && name !== "number" && name !== "email" && name !== "select" && S.editingId != null){
+    closeEditor(true);
+  }
   S.tool = name;
   tbtns.forEach(function(b){
     var on = b.dataset.tool === name;
@@ -1531,7 +2191,9 @@ function setTool(name){
   cv.style.cursor = cur; ovl.style.cursor = cur;
 
   if (name === "select") setHint("Select an item to move or edit. Drag the corner to resize shapes and images.");
-  else if (name === "text") setHint("Tap where you want to add <b>text</b>.");
+  else if (name === "text") setHint("Tap where you want to add <b>text</b>. The on-screen keyboard will appear.");
+  else if (name === "number") setHint("Tap where you want a <b>number</b>. The digits keyboard will appear.");
+  else if (name === "email") setHint("Tap where you want an <b>email address</b>. The email keyboard will appear.");
   else if (name === "check") setHint("Tap where you want a <b>checkmark</b>.");
   else if (name === "date") setHint("Tap where you want to place <b>today's date</b>.");
   else if (name === "signature") setHint(S.pendSig
@@ -1610,32 +2272,41 @@ ovl.addEventListener("pointerdown", function(e){
 }, true);
 
 rotCW.addEventListener("click", function(){
+  closeEditor(true);
   S.pageRot[S.page] = ((S.pageRot[S.page] || 0) + 90) % 360;
   render(); toast("Rotated page " + (S.page + 1) + " clockwise.");
   track("page_rotated", { dir: "cw" });
 });
 rotCCW.addEventListener("click", function(){
+  closeEditor(true);
   S.pageRot[S.page] = ((S.pageRot[S.page] || 0) + 270) % 360;
   render(); toast("Rotated page " + (S.page + 1) + " counter-clockwise.");
   track("page_rotated", { dir: "ccw" });
 });
 delPage.addEventListener("click", function(){
   if (S.pages <= 1){ toast("Cannot delete the only page."); return; }
+  closeEditor(true);
   cfmSub.textContent = "Delete page " + (S.page + 1) + "? This will be applied on download.";
   cfmModal.dataset.action = "delPage";
   cfmModal.classList.remove("hide");
   document.body.style.overflow = "hidden";
 });
 
-function setZoom(z){ S.scale = Math.max(0.5, Math.min(3, z)); render(); }
+function setZoom(z){
+  closeEditor(true);
+  S.scale = Math.max(0.5, Math.min(3, z));
+  render();
+}
 zin.addEventListener("click", function(){ setZoom(S.scale + 0.2); });
 zout.addEventListener("click", function(){ setZoom(S.scale - 0.2); });
 zreset.addEventListener("click", function(){ setZoom(1); });
 
 prevBtn.addEventListener("click", function(){
+  closeEditor(true);
   if (S.page > 0){ S.page--; S.sel = null; render(); syncProps(); }
 });
 nextBtn.addEventListener("click", function(){
+  closeEditor(true);
   if (S.page < S.pages - 1){ S.page++; S.sel = null; render(); syncProps(); }
 });
 
@@ -1767,6 +2438,7 @@ function trim(src){
 }
 
 function askNew(){
+  closeEditor(true);
   if (!S.doc || S.annos.length === 0){ reset(); return; }
   cfmSub.textContent = "Your changes will be lost.";
   cfmModal.dataset.action = "new";
@@ -1807,10 +2479,13 @@ function reset(){
   if (S.doc && S.doc.destroy){ try{ S.doc.destroy(); }catch(e){} }
   S.doc = null; S.bytes = null;
   S.annos = []; S.fields = []; S.hist = []; S.fut = [];
-  S.sel = null; S.pendSig = null;
+  S.sel = null; S.pendSig = null; S.editingId = null;
   S.page = 0; S.scale = 1;
   S.pageRot = {}; S.delPages = [];
   ovl.innerHTML = "";
+  inlineEditor.classList.remove("on");
+  inlineEditor.value = "";
+  vkHide();
   editor.classList.remove("on");
   upload.style.display = "";
   fileInput.value = "";
@@ -1821,6 +2496,7 @@ function reset(){
 
 dlBtn.addEventListener("click", function(){
   if (!S.bytes) return;
+  closeEditor(true);
   showLoad("Preparing your PDF…");
 
   loadPdfLib().then(function(){
@@ -2009,6 +2685,7 @@ window.addEventListener("keydown", function(e){
     if (!cfmModal.classList.contains("hide")){
       cfmModal.classList.add("hide"); document.body.style.overflow = "";
     }
+    if (S.editingId != null) { closeEditor(true); return; }
     if (S.tool !== "select") setTool("select");
   }
 });
