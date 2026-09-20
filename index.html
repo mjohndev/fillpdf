@@ -299,6 +299,7 @@ header{padding:22px 0}
 .grid ul.clean{list-style:none;padding-left:0}
 .grid ul.clean li{padding-left:22px;position:relative}
 .grid ul.clean li::before{content:"✓";position:absolute;left:0;color:#16a34a;font-weight:800}
+.grid kbd{background:#f3f4f6;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-family:inherit;font-size:13px;font-weight:600;color:var(--ink)}
 
 .faq{padding:60px 0 80px}
 .faq details{border-bottom:1px solid var(--line);padding:18px 0}
@@ -709,8 +710,7 @@ body.vk-open{padding-bottom:230px}
           <h3>Fill PDF on Your Phone</h3>
           <p>
             FillPDF.app is built mobile-first with its own in-browser keyboard, so
-            typing works the same on every device. No more fighting with mobile
-            keyboards that won't appear.
+            typing works the same on every device.
           </p>
           <ul class="clean">
             <li>Number pad and email layout built in</li>
@@ -728,6 +728,54 @@ body.vk-open{padding-bottom:230px}
           <p>
             A <strong>non-fillable</strong> PDF is flat. Use any of the annotation
             tools to place content anywhere on the page.
+          </p>
+        </section>
+
+        <section>
+          <h3>Select, Move &amp; Edit — Tap Once vs. Tap Twice</h3>
+          <p>
+            The <strong>Select</strong> tool is how you move, resize, edit or
+            delete anything you've placed on the page. It uses two gestures:
+          </p>
+          <ul>
+            <li><strong>Tap once</strong> — the item becomes <em>selected</em>
+              (a blue dashed outline appears). While selected, drag it to move
+              it, use the corner handle to resize shapes and images, or press
+              <strong>Delete</strong> in the options bar.</li>
+            <li><strong>Tap twice (double-tap)</strong> — the text editor and
+              keyboard reopen with that item's existing content, so you can
+              edit it. This only applies to text, number and email boxes.</li>
+          </ul>
+          <p>
+            So the pattern is: <em>tap once to grab it, tap twice to type in it.</em>
+            Nothing happens to text unless you intentionally tap it twice, which
+            means you'll never accidentally overwrite a filled-in field while
+            repositioning it.
+          </p>
+        </section>
+
+        <section>
+          <h3>Three Keyboards: Text, Number and Email</h3>
+          <p>
+            FillPDF.app shows you exactly the keys you need for the field you're
+            filling — no switching between layers just to type an <code>@</code>
+            or a digit.
+          </p>
+          <ul>
+            <li><strong>Text</strong> — a full QWERTY keyboard for names,
+              addresses, and any general-purpose text.</li>
+            <li><strong>Number</strong> — opens directly on a digits layout
+              (1–9, 0) with <code>-</code>, <code>/</code>, <code>:</code>,
+              <code>.</code>, <code>,</code> and <code>+</code> ready. Perfect
+              for phone numbers, ZIP codes, IDs and amounts.</li>
+            <li><strong>Email</strong> — a letter keyboard with <code>@</code>
+              and <code>.</code> permanently visible, so typing an email address
+              is a single row of keys instead of constant layer switching.</li>
+          </ul>
+          <p>
+            Each keyboard has a <strong>Tab</strong> key that jumps to the next
+            empty field on the page, so filling a multi-field form is just
+            type → Tab → type → Tab.
           </p>
         </section>
       </div>
@@ -847,7 +895,6 @@ body.vk-open{padding-bottom:230px}
      ========================================================= -->
 <div class="vk" id="vk" hidden aria-label="On-screen keyboard">
 
-  <!-- Letters layer -->
   <div class="vk-layer" data-layer="letters">
     <div class="vk-row">
       <button type="button" class="vk-key" data-ch="q">q</button>
@@ -892,7 +939,6 @@ body.vk-open{padding-bottom:230px}
     </div>
   </div>
 
-  <!-- Numbers layer -->
   <div class="vk-layer" data-layer="numbers" hidden>
     <div class="vk-row">
       <button type="button" class="vk-key" data-ch="1">1</button>
@@ -927,7 +973,6 @@ body.vk-open{padding-bottom:230px}
     </div>
   </div>
 
-  <!-- Email layer -->
   <div class="vk-layer" data-layer="email" hidden>
     <div class="vk-row">
       <button type="button" class="vk-key" data-ch="q">q</button>
@@ -974,7 +1019,6 @@ body.vk-open{padding-bottom:230px}
     </div>
   </div>
 
-  <!-- Symbols layer 1 -->
   <div class="vk-layer" data-layer="sym1" hidden>
     <div class="vk-row">
       <button type="button" class="vk-key" data-ch="1">1</button>
@@ -1018,7 +1062,6 @@ body.vk-open{padding-bottom:230px}
     </div>
   </div>
 
-  <!-- Symbols layer 2 -->
   <div class="vk-layer" data-layer="sym2" hidden>
     <div class="vk-row">
       <button type="button" class="vk-key" data-ch="[">[</button>
@@ -1148,6 +1191,7 @@ var S = {
 var seq = 0;
 function nid(){ return ++seq; }
 var vkShiftOn = false;
+var lastTapId = null, lastTapTime = 0;
 
 var toastT;
 function toast(m){
@@ -1211,7 +1255,6 @@ function vkSetLayer(name){
   });
 }
 function vkApplyCase(){
-  // Apply shift state to all letter keys in every layer that has them
   vkLayers.forEach(function(layer){
     Array.prototype.forEach.call(layer.querySelectorAll(".vk-key[data-ch]"), function(btn){
       var base = btn.dataset.ch;
@@ -1376,13 +1419,10 @@ function vkBackspace(){
   revealEditor();
 }
 
-/* Tab: jump to next empty text annotation on the page.
-   If all are filled, cycle to the next one. */
 function vkTab(){
   var current = S.annos.filter(function(x){ return x.id === S.editingId; })[0];
   if (!current) return;
 
-  // Collect all text annotations on this page, sorted by visual order
   var texts = S.annos.filter(function(a){
     return a.page === S.page && a.type === "text";
   }).sort(function(a, b){
@@ -1398,7 +1438,6 @@ function vkTab(){
   }
   if (idx === -1) return;
 
-  // Prefer next empty field
   var target = null;
   for (var j = 1; j < texts.length; j++){
     var cand = texts[(idx + j) % texts.length];
@@ -1409,31 +1448,25 @@ function vkTab(){
     }
   }
 
-  // Otherwise, next field in order
   if (!target){
     var next = texts[(idx + 1) % texts.length];
     if (next.id === current.id) return;
     target = next;
   }
 
-  // Save current text first
   current.text = inlineEditor.value;
-
   var targetId = target.id;
 
-  // Manually close editor (skip its auto-push to avoid double-pushing)
   vkHide();
   inlineEditor.classList.remove("on");
   inlineEditor.value = "";
   S.editingId = null;
 
-  // Clean up empty current
   if (!current.text.trim()){
     S.annos = S.annos.filter(function(x){ return x.id !== current.id; });
   }
   push();
 
-  // Re-lookup target (it may have shifted)
   var t2 = S.annos.filter(function(x){ return x.id === targetId; })[0];
   if (!t2){ drawAll(); syncProps(); return; }
 
@@ -1833,13 +1866,31 @@ function drawFields(){
   });
 }
 
+/* =========================================================
+   ANNOTATION INTERACTION
+   Single tap: select. Double tap: edit text.
+   ========================================================= */
 function bindAnno(el, a){
-  var drag = false, moved = false, sx = 0, sy = 0, ox = 0, oy = 0, ox2 = 0, oy2 = 0;
+  var drag = false, moved = false;
+  var sx = 0, sy = 0, ox = 0, oy = 0, ox2 = 0, oy2 = 0;
 
   el.addEventListener("pointerdown", function(e){
     if (S.tool !== "select") return;
     if (e.target.classList.contains("rh")) return;
     e.stopPropagation();
+
+    // Double-tap detection for text (must happen here — before DOM rebuild)
+    var now = Date.now();
+    if (a.type === "text" && lastTapId === a.id && (now - lastTapTime) < 400){
+      lastTapId = null;
+      lastTapTime = 0;
+      e.preventDefault();
+      openEditorFor(a);
+      return;
+    }
+    lastTapId = a.id;
+    lastTapTime = now;
+
     drag = true; moved = false;
     sx = e.clientX; sy = e.clientY; ox = a.x; oy = a.y;
     if (a.type === "arrow"){ ox2 = a.x2; oy2 = a.y2; }
@@ -1878,12 +1929,6 @@ function bindAnno(el, a){
     if (moved){ push(); if (a.type === "arrow" || a.type === "draw") drawAll(); }
   });
   el.addEventListener("pointercancel", function(){ drag = false; el.classList.remove("drag"); });
-
-  el.addEventListener("click", function(e){
-    if (a.type !== "text") return;
-    e.stopPropagation();
-    openEditorFor(a);
-  });
 
   el.addEventListener("keydown", function(e){
     if (e.key === "Delete" || e.key === "Backspace"){
@@ -2022,7 +2067,6 @@ function place(cx, cy){
   var x = (cx - r.left) / k, y = (cy - r.top) / k;
 
   var a = null;
-  var kind = "text";
   if (S.tool === "text"){
     a = { id: nid(), page: S.page, type: "text", kind: "text", x: x, y: y, text: "", fontSize: S.textSize, color: S.textColor };
     track("text_added");
@@ -2063,7 +2107,6 @@ function place(cx, cy){
   S.annos.push(a);
 
   if (a.type === "text"){
-    // Flip to Select immediately
     tbtns.forEach(function(b){
       var on = b.dataset.tool === "select";
       b.classList.toggle("on", on);
@@ -2073,11 +2116,9 @@ function place(cx, cy){
     cv.style.cursor = "default";
     ovl.style.cursor = "default";
 
-    // Checkpoint first
     S.hist.push(snap());
     histBtn();
 
-    // Open the shared editor + virtual keyboard synchronously
     openEditorFor(a);
     return;
   }
@@ -2178,7 +2219,7 @@ function fmt(d){
 var tbtns = Array.prototype.slice.call(document.querySelectorAll(".tbtn[data-tool]"));
 
 function setTool(name){
-  if (name !== "text" && name !== "number" && name !== "email" && name !== "select" && S.editingId != null){
+  if (S.editingId != null){
     closeEditor(true);
   }
   S.tool = name;
@@ -2190,7 +2231,7 @@ function setTool(name){
   var cur = name === "select" ? "default" : "crosshair";
   cv.style.cursor = cur; ovl.style.cursor = cur;
 
-  if (name === "select") setHint("Select an item to move or edit. Drag the corner to resize shapes and images.");
+  if (name === "select") setHint("Tap once to select, tap again to edit text. Drag to move.");
   else if (name === "text") setHint("Tap where you want to add <b>text</b>. The on-screen keyboard will appear.");
   else if (name === "number") setHint("Tap where you want a <b>number</b>. The digits keyboard will appear.");
   else if (name === "email") setHint("Tap where you want an <b>email address</b>. The email keyboard will appear.");
