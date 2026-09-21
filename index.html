@@ -204,9 +204,47 @@ header{padding:22px 0}
 .props .del{
   margin-left:auto;background:#dc2626;color:#fff;border:0;
   padding:7px 14px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;
+  flex:none;
 }
 .props .del:hover{background:#b91c1c}
 .pg{display:flex;align-items:center;gap:8px}
+
+/* Directional pad for moving selected items */
+.props .dpad{
+  display:inline-grid;
+  grid-template-columns:30px 30px 30px;
+  grid-template-rows:30px 30px 30px;
+  gap:2px;
+  flex:none;
+}
+.props .dpad.hide{display:none}
+.props .dpad button{
+  width:30px;height:30px;
+  border-radius:6px;
+  background:#1f2937;
+  border:1px solid #374151;
+  color:#fff;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:700;
+  line-height:1;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  font-family:inherit;
+  -webkit-tap-highlight-color:transparent;
+}
+.props .dpad button:hover{background:#374151}
+.props .dpad button:active{background:#4b5563;transform:translateY(1px)}
+.props .dpad .up{grid-column:2;grid-row:1}
+.props .dpad .left{grid-column:1;grid-row:2}
+.props .dpad .right{grid-column:3;grid-row:2}
+.props .dpad .down{grid-column:2;grid-row:3}
+@media(max-width:640px){
+  .props .dpad{grid-template-columns:32px 32px 32px;grid-template-rows:32px 32px 32px}
+  .props .dpad button{width:32px;height:32px;font-size:13px}
+}
 
 .stage{
   background:#f3f4f6;border-radius:20px;padding:24px 16px;
@@ -651,6 +689,16 @@ body.vk-open{padding-bottom:230px}
         <input type="range" id="pThick" min="1" max="12" value="2">
       </span>
 
+      <span class="pg" id="pgMove" style="display:none">
+        <label>Move</label>
+        <span class="dpad" id="dpad" aria-label="Move selected item">
+          <button type="button" class="up" data-move="up" aria-label="Move up">▲</button>
+          <button type="button" class="left" data-move="left" aria-label="Move left">◀</button>
+          <button type="button" class="right" data-move="right" aria-label="Move right">▶</button>
+          <button type="button" class="down" data-move="down" aria-label="Move down">▼</button>
+        </span>
+      </span>
+
       <button type="button" class="del" id="delAnno">Delete</button>
     </div>
 
@@ -714,34 +762,23 @@ body.vk-open{padding-bottom:230px}
           </p>
           <ul class="clean">
             <li>Number pad and email layout built in</li>
-            <li>Tab jumps to the next empty field</li>
+            <li>Arrow pad for precise positioning</li>
             <li>Sign with your fingertip</li>
           </ul>
         </section>
 
         <section>
-          <h3>Fillable vs Non-Fillable</h3>
-          <p>
-            A <strong>fillable</strong> PDF has interactive AcroForm fields — FillPDF
-            detects them automatically and turns them into live inputs you can type in.
-          </p>
-          <p>
-            A <strong>non-fillable</strong> PDF is flat. Use any of the annotation
-            tools to place content anywhere on the page.
-          </p>
-        </section>
-
-        <section>
           <h3>Select, Move &amp; Edit — Tap Once vs. Tap Twice</h3>
           <p>
-            The <strong>Select</strong> tool is how you move, resize, edit or
+            The <strong>Select</strong> tool is how you move, edit, resize or
             delete anything you've placed on the page. It uses two gestures:
           </p>
           <ul>
             <li><strong>Tap once</strong> — the item becomes <em>selected</em>
               (a blue dashed outline appears). While selected, drag it to move
-              it, use the corner handle to resize shapes and images, or press
-              <strong>Delete</strong> in the options bar.</li>
+              it, or use the <strong>arrow pad</strong> (◀ ▲ ▼ ▶) that appears
+              in the options bar to nudge it pixel by pixel. Press
+              <strong>Delete</strong> to remove it.</li>
             <li><strong>Tap twice (double-tap)</strong> — the text editor and
               keyboard reopen with that item's existing content, so you can
               edit it. This only applies to text, number and email boxes.</li>
@@ -776,6 +813,27 @@ body.vk-open{padding-bottom:230px}
             Each keyboard has a <strong>Tab</strong> key that jumps to the next
             empty field on the page, so filling a multi-field form is just
             type → Tab → type → Tab.
+          </p>
+        </section>
+
+        <section>
+          <h3>Move with Arrow Buttons</h3>
+          <p>
+            Not every device drags cleanly — so every selected item also has a
+            <strong>directional pad</strong> in the options bar: <strong>◀ ▲ ▼ ▶</strong>.
+            Tap an arrow to move the selected item 5 pixels in that direction.
+          </p>
+          <ul>
+            <li>Works for text, checkmarks, dates, signatures, highlights,
+              shapes, arrows, freehand drawings and images.</li>
+            <li>Perfect for fine-tuning placement when a drag overshoots.</li>
+            <li>On desktop, you can also use the physical arrow keys on your
+              keyboard, and hold <kbd>Shift</kbd> to jump 10 pixels at a time.</li>
+          </ul>
+          <p>
+            So if drag doesn't work on your device for whatever reason, the arrow
+            pad always does — it's a guaranteed way to reposition anything you've
+            placed.
           </p>
         </section>
       </div>
@@ -1168,8 +1226,9 @@ var zin = $("zin"), zout = $("zout"), zreset = $("zreset"), zval = $("zval");
 var rotCW = $("rotCW"), rotCCW = $("rotCCW"), delPage = $("delPage");
 var dlBtn = $("dl"), newBtn = $("newBtn"), newTop = $("newTop");
 var props = $("props"), propsHdr = $("propsHdr");
-var pgText = $("pgText"), pgHi = $("pgHi"), pgStroke = $("pgStroke");
+var pgText = $("pgText"), pgHi = $("pgHi"), pgStroke = $("pgStroke"), pgMove = $("pgMove");
 var pSize = $("pSize"), pColor = $("pColor"), pStroke = $("pStroke"), pThick = $("pThick");
+var dpad = $("dpad");
 var delAnno = $("delAnno");
 var sigModal = $("sigModal"), sigcv = $("sigcv"), sigClear = $("sigClear"), sigSave = $("sigSave");
 var cfmModal = $("cfmModal"), cfmSub = $("cfmSub");
@@ -1192,6 +1251,7 @@ var seq = 0;
 function nid(){ return ++seq; }
 var vkShiftOn = false;
 var lastTapId = null, lastTapTime = 0;
+var moveHistoryTimer = null;
 
 var toastT;
 function toast(m){
@@ -1868,7 +1928,6 @@ function drawFields(){
 
 /* =========================================================
    ANNOTATION INTERACTION
-   Single tap: select. Double tap: edit text.
    ========================================================= */
 function bindAnno(el, a){
   var drag = false, moved = false;
@@ -1879,7 +1938,6 @@ function bindAnno(el, a){
     if (e.target.classList.contains("rh")) return;
     e.stopPropagation();
 
-    // Double-tap detection for text (must happen here — before DOM rebuild)
     var now = Date.now();
     if (a.type === "text" && lastTapId === a.id && (now - lastTapTime) < 400){
       lastTapId = null;
@@ -1948,15 +2006,59 @@ function del(id){
   S.sel = null; push(); drawAll(); syncProps();
 }
 
+/* =========================================================
+   MOVE SELECTED ITEM BY (dx, dy)
+   ========================================================= */
+function moveSelected(dx, dy){
+  var a = S.annos.filter(function(x){ return x.id === S.sel; })[0];
+  if (!a) return;
+
+  if (a.type === "draw"){
+    a.minX += dx; a.maxX += dx;
+    a.minY += dy; a.maxY += dy;
+    a.points = a.points.map(function(p){ return [p[0] + dx, p[1] + dy]; });
+  } else {
+    a.x += dx;
+    a.y += dy;
+    if (a.type === "arrow"){ a.x2 += dx; a.y2 += dy; }
+  }
+
+  if (S.editingId === a.id){
+    var k = S.base * S.scale;
+    inlineEditor.style.left = (a.x * k) + "px";
+    inlineEditor.style.top  = (a.y * k) + "px";
+  }
+
+  drawAnnos();
+
+  clearTimeout(moveHistoryTimer);
+  moveHistoryTimer = setTimeout(function(){
+    push();
+  }, 400);
+}
+
+Array.prototype.forEach.call(dpad.querySelectorAll("button[data-move]"), function(btn){
+  btn.addEventListener("click", function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    var dir = btn.dataset.move;
+    var step = 5;
+    var dx = dir === "left" ? -step : dir === "right" ? step : 0;
+    var dy = dir === "up" ? -step : dir === "down" ? step : 0;
+    moveSelected(dx, dy);
+  });
+});
+
 function syncProps(){
   var a = S.annos.filter(function(x){ return x.id === S.sel; })[0];
   var tool = S.tool;
   pgText.style.display = "none";
   pgHi.style.display = "none";
   pgStroke.style.display = "none";
+  pgMove.style.display = "none";
   props.classList.add("hide");
 
-  var showText = false, showHi = false, showStroke = false, showDel = false;
+  var showText = false, showHi = false, showStroke = false, showDel = false, showMove = false;
   var hdr = "Options";
 
   if (a){
@@ -1978,6 +2080,7 @@ function syncProps(){
       pThick.value = a.thickness;
     }
     showDel = true;
+    showMove = true;
   } else {
     if (tool === "text" || tool === "number" || tool === "email"){
       hdr = (tool === "number" ? "Number" : tool === "email" ? "Email" : "Text");
@@ -1995,12 +2098,13 @@ function syncProps(){
     }
   }
 
-  if (showText || showHi || showStroke || showDel){
+  if (showText || showHi || showStroke || showDel || showMove){
     props.classList.remove("hide");
     propsHdr.textContent = hdr;
     pgText.style.display = showText ? "flex" : "none";
     pgHi.style.display = showHi ? "flex" : "none";
     pgStroke.style.display = showStroke ? "flex" : "none";
+    pgMove.style.display = showMove ? "flex" : "none";
     delAnno.style.display = showDel ? "block" : "none";
   }
 }
@@ -2231,7 +2335,7 @@ function setTool(name){
   var cur = name === "select" ? "default" : "crosshair";
   cv.style.cursor = cur; ovl.style.cursor = cur;
 
-  if (name === "select") setHint("Tap once to select, tap again to edit text. Drag to move.");
+  if (name === "select") setHint("Tap once to select, then use the arrow pad (◀ ▲ ▼ ▶) to move. Tap twice to edit text.");
   else if (name === "text") setHint("Tap where you want to add <b>text</b>. The on-screen keyboard will appear.");
   else if (name === "number") setHint("Tap where you want a <b>number</b>. The digits keyboard will appear.");
   else if (name === "email") setHint("Tap where you want an <b>email address</b>. The email keyboard will appear.");
@@ -2381,14 +2485,7 @@ document.addEventListener("keydown", function(e){
     var step = e.shiftKey ? 10 : 1;
     var dx = e.key === "ArrowRight" ? step : e.key === "ArrowLeft" ? -step : 0;
     var dy = e.key === "ArrowDown" ? step : e.key === "ArrowUp" ? -step : 0;
-    if (a2.type === "draw"){
-      a2.minX += dx; a2.maxX += dx; a2.minY += dy; a2.maxY += dy;
-      a2.points = a2.points.map(function(p){ return [p[0]+dx, p[1]+dy]; });
-    } else {
-      a2.x += dx; a2.y += dy;
-      if (a2.type === "arrow"){ a2.x2 += dx; a2.y2 += dy; }
-    }
-    drawAll(); push();
+    moveSelected(dx, dy);
   }
 });
 
